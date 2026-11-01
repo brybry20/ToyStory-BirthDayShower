@@ -1,0 +1,5 @@
+/* App-level utility styles */
+.toystory-app-root {
+  min-height: 100vh;
+  position: relative;
+}

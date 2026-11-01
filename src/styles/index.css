@@ -1,0 +1,504 @@
+/* =======================================================================
+   TOY STORY INSPIRED DESIGN SYSTEM - GLOBAL CSS
+   ======================================================================= */
+
+:root {
+  /* Sky & Andy Bedroom Wall */
+  --sky-blue: #48a6e9;
+  --sky-blue-light: #78c8fb;
+  --sky-blue-deep: #2a88d0;
+  --sky-blue-dark: #1b639e;
+  
+  /* Toy Story Signature Colors */
+  --toy-yellow: #ffd000;
+  --toy-yellow-hover: #ffdd33;
+  --toy-yellow-dark: #d49a00;
+  
+  --toy-red: #ff3b4e;
+  --toy-red-hover: #ff5c6d;
+  --toy-red-dark: #c41e30;
+  
+  --toy-blue: #2563eb;
+  --toy-blue-dark: #1d4ed8;
+  
+  --toy-green: #38b000;
+  --toy-green-dark: #278000;
+  
+  --toy-purple: #8338ec;
+  --toy-orange: #ff8800;
+  
+  /* Neutral & Room Tones */
+  --cloud-white: #ffffff;
+  --cream-card: #fffdf8;
+  --cream-card-alt: #fef8ee;
+  --text-dark: #202b38;
+  --text-muted: #5a6e85;
+  --border-light: rgba(72, 166, 233, 0.2);
+  
+  /* Wood Floor Palette */
+  --wood-floor-light: #c88c58;
+  --wood-floor-mid: #b1723c;
+  --wood-floor-dark: #8c5324;
+  --wood-baseboard: #6d3d14;
+
+  /* Typography */
+  --font-toy: 'Lilita One', cursive, sans-serif;
+  --font-fun: 'Fredoka', cursive, sans-serif;
+  --font-body: 'Quicksand', 'Outfit', sans-serif;
+
+  /* Shadows */
+  --shadow-toy: 0 10px 0 rgba(0, 0, 0, 0.15);
+  --shadow-card: 0 16px 36px -4px rgba(23, 70, 115, 0.22), 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-floating: 0 20px 45px -8px rgba(16, 52, 90, 0.3);
+  --shadow-inset-toy: inset 0 -4px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Base Reset & Smoothness */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-body);
+  color: var(--text-dark);
+  background-color: var(--sky-blue);
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #4da9eb 0%, #3ca0e5 40%, #2f8ecf 80%, #2880bc 100%);
+  background-attachment: fixed;
+  color: var(--text-dark);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Selection Color */
+::selection {
+  background: var(--toy-yellow);
+  color: #1a202c;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: #3ca0e5;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--toy-yellow);
+  border-radius: 8px;
+  border: 3px solid #3ca0e5;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #f5b700;
+}
+
+/* Container Utility */
+.container {
+  width: 100%;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Headings */
+h1, h2, h3, .heading-toy {
+  font-family: var(--font-toy);
+  letter-spacing: 0.5px;
+  line-height: 1.15;
+}
+
+h4, h5, h6, .subheading-toy {
+  font-family: var(--font-fun);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Tactile 3D Toy Button */
+.btn-toy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-toy);
+  font-size: 1.15rem;
+  padding: 14px 28px;
+  border-radius: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease, filter 0.15s ease;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-toy:active {
+  transform: translateY(4px);
+}
+
+.btn-toy-yellow {
+  background: linear-gradient(180deg, #ffe043 0%, var(--toy-yellow) 100%);
+  color: #523900;
+  box-shadow: 0 6px 0 var(--toy-yellow-dark), 0 10px 20px rgba(0, 0, 0, 0.18);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.btn-toy-yellow:hover {
+  filter: brightness(1.05);
+}
+.btn-toy-yellow:active {
+  box-shadow: 0 2px 0 var(--toy-yellow-dark), 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-toy-red {
+  background: linear-gradient(180deg, #ff5768 0%, var(--toy-red) 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 0 var(--toy-red-dark), 0 10px 20px rgba(200, 30, 48, 0.3);
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+}
+.btn-toy-red:hover {
+  filter: brightness(1.08);
+}
+.btn-toy-red:active {
+  box-shadow: 0 2px 0 var(--toy-red-dark), 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-toy-blue {
+  background: linear-gradient(180deg, #498ff7 0%, var(--toy-blue) 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 0 var(--toy-blue-dark), 0 10px 20px rgba(29, 78, 216, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+.btn-toy-blue:hover {
+  filter: brightness(1.08);
+}
+.btn-toy-blue:active {
+  box-shadow: 0 2px 0 var(--toy-blue-dark), 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-toy-orange {
+  background: linear-gradient(180deg, #ff9900 0%, #ea580c 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 0 #9a3412, 0 10px 20px rgba(234, 88, 12, 0.35);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+.btn-toy-orange:hover {
+  filter: brightness(1.08);
+}
+.btn-toy-orange:active {
+  box-shadow: 0 2px 0 #9a3412, 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-toy-white {
+  background: #ffffff;
+  color: var(--toy-blue);
+  box-shadow: 0 6px 0 #cde1f7, 0 10px 20px rgba(0, 0, 0, 0.12);
+  border-color: #ffffff;
+}
+.btn-toy-white:active {
+  box-shadow: 0 2px 0 #cde1f7, 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Toy Story Themed Card Base */
+.toy-card {
+  background: var(--cream-card);
+  border-radius: 28px;
+  box-shadow: var(--shadow-card);
+  border: 4px solid #ffffff;
+  position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.toy-card-stitched {
+  border: 3px dashed #e5a93c;
+  outline: 4px solid #ffffff;
+  outline-offset: -10px;
+}
+
+/* Badge Styles */
+.toy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-family: var(--font-fun);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.toy-badge-yellow {
+  background: var(--toy-yellow);
+  color: #553b00;
+  box-shadow: 0 3px 0 var(--toy-yellow-dark);
+}
+
+.toy-badge-red {
+  background: var(--toy-red);
+  color: #ffffff;
+  box-shadow: 0 3px 0 var(--toy-red-dark);
+}
+
+.toy-badge-blue {
+  background: var(--toy-blue);
+  color: #ffffff;
+  box-shadow: 0 3px 0 var(--toy-blue-dark);
+}
+
+.toy-badge-white {
+  background: #ffffff;
+  color: var(--sky-blue-deep);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Toy Story Cutout Sticker Effect (Die-cut white vinyl border + toy drop shadow) */
+.toy-cutout-sticker {
+  filter: drop-shadow(0 0 2px #ffffff) drop-shadow(0 0 4px rgba(255, 255, 255, 0.95)) drop-shadow(0 14px 22px rgba(12, 45, 80, 0.32));
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.28s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.toy-cutout-sticker:hover {
+  transform: translateY(-8px) scale(1.08) rotate(3deg);
+  filter: drop-shadow(0 0 4px #ffffff) drop-shadow(0 0 8px rgba(255, 208, 0, 0.85)) drop-shadow(0 20px 30px rgba(12, 45, 80, 0.45));
+}
+
+/* Wooden Floorboards Section (Andy's room floor) */
+.wood-floor-container {
+  background: repeating-linear-gradient(
+    90deg,
+    var(--wood-floor-mid) 0px,
+    var(--wood-floor-light) 40px,
+    var(--wood-floor-mid) 80px,
+    var(--wood-floor-dark) 82px
+  );
+  border-top: 12px solid var(--wood-baseboard);
+  box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+/* 3D Alphabet Toy Block Component Styling */
+.toy-block-cube {
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-toy);
+  font-size: 2rem;
+  color: #ffffff;
+  border: 4px solid rgba(255, 255, 255, 0.65);
+  position: relative;
+  user-select: none;
+  transform-style: preserve-3d;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toy-block-cube::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  right: 3px;
+  height: 40%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0) 100%);
+  border-radius: 8px 8px 0 0;
+  pointer-events: none;
+}
+
+.toy-block-red {
+  background: linear-gradient(145deg, #ff4d5e, #dc2033);
+  box-shadow: 0 8px 0 #9c1322, 0 14px 18px rgba(0, 0, 0, 0.25);
+}
+
+.toy-block-blue {
+  background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+  box-shadow: 0 8px 0 #13399e, 0 14px 18px rgba(0, 0, 0, 0.25);
+}
+
+.toy-block-yellow {
+  background: linear-gradient(145deg, #ffd62e, #f59e0b);
+  box-shadow: 0 8px 0 #b45309, 0 14px 18px rgba(0, 0, 0, 0.25);
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.toy-block-green {
+  background: linear-gradient(145deg, #48ca4b, #2f9e32);
+  box-shadow: 0 8px 0 #1e6b21, 0 14px 18px rgba(0, 0, 0, 0.25);
+}
+
+.toy-block-cube:hover {
+  transform: translateY(-6px) rotate(-3deg);
+}
+
+/* =======================================================================
+   RESPONSIVE DESIGN ACROSS PCS, LAPTOPS, TABLETS & CELLPHONES
+   ======================================================================= */
+
+/* Prevent iOS Safari automatic zoom on inputs */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+select,
+textarea {
+  font-size: 16px !important;
+}
+
+/* High-res PC & Desktop (1180px and above) */
+@media (min-width: 1180px) {
+  .desktop-toy-float {
+    display: block !important;
+  }
+  .mobile-toy-row {
+    display: none !important;
+  }
+}
+
+/* Laptops, Tablets & Cellphones (under 1180px) */
+@media (max-width: 1179px) {
+  .desktop-toy-float {
+    display: none !important;
+  }
+  .mobile-toy-row {
+    display: flex !important;
+  }
+}
+
+/* Tablets & Mobile Devices (under 768px) */
+@media (max-width: 768px) {
+  .rope-climber-aside {
+    right: 8px !important;
+    width: 48px !important;
+  }
+  .rope-woody-img,
+  .rope-woody-svg {
+    width: 58px !important;
+  }
+  .rope-climber-badge {
+    right: auto !important;
+    left: 50% !important;
+    top: -26px !important;
+    transform: translateX(-50%) !important;
+    padding: 2px 8px !important;
+    font-size: 0.68rem !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+  }
+}
+
+/* Hide side companion characters on mobile/tablet so envelope is grand and centered */
+@media (max-width: 860px) {
+  .envelope-companion-left,
+  .envelope-companion-right {
+    display: none !important;
+  }
+}
+
+/* Cellphones & Small Screens (under 640px) */
+@media (max-width: 640px) {
+  .container {
+    padding: 0 14px !important;
+  }
+
+  section {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .toy-card {
+    border-radius: 24px !important;
+  }
+
+  /* Compact Music Player Pill on mobile */
+  .music-player-container {
+    left: 10px !important;
+    bottom: 12px !important;
+    max-width: calc(100vw - 64px) !important;
+  }
+
+  .music-player-capsule {
+    padding: 6px 12px !important;
+    gap: 8px !important;
+  }
+
+  .music-player-btn {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .music-player-subtext {
+    display: none !important;
+  }
+
+  .music-player-title {
+    font-size: 0.8rem !important;
+    max-width: 135px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Compact Navigation on mobile */
+  .navigation-pill-container {
+    top: 10px !important;
+    left: 10px !important;
+    gap: 6px !important;
+  }
+
+  .navigation-pill-btn {
+    padding: 7px 14px !important;
+    font-size: 0.78rem !important;
+  }
+
+  /* Responsive Jo Direct RSVP Banner */
+  .jo-rsvp-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 16px !important;
+    text-align: center !important;
+  }
+
+  .jo-rsvp-banner-header {
+    flex-direction: column !important;
+    text-align: center !important;
+  }
+
+  .jo-rsvp-actions {
+    width: 100% !important;
+    display: flex !important;
+    gap: 8px !important;
+    margin-top: 6px !important;
+  }
+
+  .jo-rsvp-actions a {
+    flex: 1 1 50% !important;
+    justify-content: center !important;
+    padding: 10px 14px !important;
+    font-size: 0.88rem !important;
+  }
+}
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

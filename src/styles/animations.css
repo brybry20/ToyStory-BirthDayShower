@@ -1,0 +1,201 @@
+/* =======================================================================
+   ANIMATIONS & KEYFRAMES (Cinematic & Playful)
+   ======================================================================= */
+
+/* Cloud Drifting */
+@keyframes driftLeftToRight {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120vw);
+  }
+}
+
+@keyframes driftRightToLeft {
+  0% {
+    transform: translateX(120vw);
+  }
+  100% {
+    transform: translateX(-120%);
+  }
+}
+
+.animate-drift-slow {
+  animation: driftLeftToRight 55s linear infinite;
+}
+
+.animate-drift-mid {
+  animation: driftLeftToRight 38s linear infinite;
+}
+
+.animate-drift-fast {
+  animation: driftLeftToRight 26s linear infinite;
+}
+
+/* Gentle Float / Bobbing */
+@keyframes floatY {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(1.5deg);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: floatY 4s ease-in-out infinite;
+}
+
+.animate-float-gentle {
+  animation: floatGentle 3s ease-in-out infinite;
+}
+
+/* Star Twinkle */
+@keyframes starTwinkle {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(0.85) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15) rotate(180deg);
+  }
+}
+
+.animate-twinkle {
+  animation: starTwinkle 2.5s ease-in-out infinite;
+}
+
+/* Gentle Pulse Glow */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 208, 0, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(255, 208, 0, 0.8), 0 0 50px rgba(255, 255, 255, 0.5);
+    transform: scale(1.03);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.2s infinite ease-in-out;
+}
+
+/* Cute Wobble / Jiggle */
+@keyframes toyWobble {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-6deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}
+
+.animate-wobble:hover {
+  animation: toyWobble 0.6s ease-in-out;
+}
+
+/* Balloon Sway */
+@keyframes balloonSway {
+  0%, 100% {
+    transform: rotate(-3deg) translateY(0);
+  }
+  50% {
+    transform: rotate(3deg) translateY(-14px);
+  }
+}
+
+.animate-balloon {
+  animation: balloonSway 4.5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Rocket Launch */
+@keyframes rocketShuttle {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  15% {
+    transform: translateY(-10px) rotate(-5deg);
+  }
+  40% {
+    transform: translateY(-80px) rotate(5deg) scale(0.95);
+  }
+  70% {
+    transform: translateY(-160px) rotate(0deg) scale(0.85);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-rocket-launch {
+  animation: rocketShuttle 2.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Envelope Flap 3D Opening */
+@keyframes flapOpen {
+  0% {
+    transform: rotateX(0deg);
+    z-index: 5;
+  }
+  100% {
+    transform: rotateX(180deg);
+    z-index: 1;
+  }
+}
+
+/* Sparkle Burst */
+@keyframes burstOut {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+.animate-burst {
+  animation: burstOut 0.8s ease-out forwards;
+}
+
+/* 3D Toy Story Logo Specular Gleam Sweep */
+@keyframes logoGleamSweep {
+  0%, 20% {
+    left: -80%;
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.85;
+  }
+  50% {
+    left: 140%;
+    opacity: 0.85;
+  }
+  51%, 100% {
+    left: 140%;
+    opacity: 0;
+  }
+}
+
