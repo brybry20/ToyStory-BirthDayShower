@@ -8,21 +8,7 @@ import { eventDetails } from '../config/eventDetails';
 
 export default function OpeningAnimation({ onComplete }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [typedLines, setTypedLines] = useState({
-    tag: '',
-    salutation: '',
-    announcement: '',
-    parentsTitle: '',
-    babyName: '',
-    bodyMessage: '',
-    date: '',
-    venue: '',
-    motto: '',
-    signature: '',
-  });
-  const [isTypingComplete, setIsTypingComplete] = useState(false);
-  const [activeLineIdx, setActiveLineIdx] = useState(0);
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(6);
 
   const handleOpen = () => {
     if (isOpen) {
@@ -46,61 +32,9 @@ export default function OpeningAnimation({ onComplete }) {
     } catch (e) {}
   };
 
-  // Typewriter effect that sequentially types out the formal invitation letter text
+  // Keep letter visible with gentle countdown or direct click to enter
   useEffect(() => {
     if (!isOpen) return;
-
-    let timer;
-    const lines = [
-      { key: 'tag', text: "★ OFFICIAL TOY STORY INVITATION ★" },
-      { key: 'salutation', text: "Dear Beloved Family & Friends," },
-      { key: 'announcement', text: "You are warmly invited to celebrate" },
-      { key: 'parentsTitle', text: `${eventDetails.parents.combined}'s Baby Shower` },
-      { key: 'babyName', text: "Welcoming Baby Boy Josiah!" },
-      { key: 'bodyMessage', text: "Please join us for a joyful gathering filled with love, laughter, and games as we prepare to welcome our little adventurer." },
-      { key: 'date', text: "Sunday, December 6, 2026 • 2:30 PM" },
-      { key: 'venue', text: "The Manoah Village Recall • Richmond, B.C." },
-      { key: 'motto', text: "“Our Greatest Adventure Is About to Begin!”" },
-      { key: 'signature', text: `— With all our love, ${eventDetails.parents.combined} Hewko` },
-    ];
-
-    let currentLine = 0;
-    let charPos = 0;
-
-    const startDelay = setTimeout(() => {
-      const typeNextChar = () => {
-        if (currentLine >= lines.length) {
-          setIsTypingComplete(true);
-          return;
-        }
-
-        setActiveLineIdx(currentLine);
-        const lineObj = lines[currentLine];
-
-        if (charPos <= lineObj.text.length) {
-          const slice = lineObj.text.slice(0, charPos);
-          setTypedLines((prev) => ({ ...prev, [lineObj.key]: slice }));
-          charPos++;
-          timer = setTimeout(typeNextChar, 14); // Crisp, rhythmic typing speed
-        } else {
-          currentLine++;
-          charPos = 0;
-          timer = setTimeout(typeNextChar, 75); // Subtle pause between lines
-        }
-      };
-
-      typeNextChar();
-    }, 600);
-
-    return () => {
-      clearTimeout(startDelay);
-      if (timer) clearTimeout(timer);
-    };
-  }, [isOpen]);
-
-  // Once typing is complete, keep letter visible for 5 full seconds before auto-entering
-  useEffect(() => {
-    if (!isTypingComplete) return;
 
     const interval = setInterval(() => {
       setCountdown((prev) => {
@@ -114,7 +48,7 @@ export default function OpeningAnimation({ onComplete }) {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isTypingComplete, onComplete]);
+  }, [isOpen, onComplete]);
 
   return (
     <motion.div
@@ -355,9 +289,9 @@ export default function OpeningAnimation({ onComplete }) {
             =================================================================== */}
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.75, y: 60 }}
+            initial={{ opacity: 0, scale: 0.85, y: 35 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
             style={{
               width: '100%',
               display: 'flex',
@@ -406,7 +340,7 @@ export default function OpeningAnimation({ onComplete }) {
                     textTransform: 'uppercase',
                   }}
                 >
-                  {typedLines.tag}
+                  ★ OFFICIAL TOY STORY INVITATION ★
                 </span>
                 <Star size={14} fill="#b45309" color="#b45309" />
               </div>
@@ -422,7 +356,7 @@ export default function OpeningAnimation({ onComplete }) {
                 }}
               />
 
-              {/* Salutation (Typewriter) */}
+              {/* Salutation */}
               <div
                 style={{
                   fontFamily: 'var(--font-fun)',
@@ -430,83 +364,50 @@ export default function OpeningAnimation({ onComplete }) {
                   fontWeight: 700,
                   color: '#475569',
                   marginBottom: '6px',
-                  minHeight: '24px',
                 }}
               >
-                <span>{typedLines.salutation}</span>
-                {activeLineIdx === 1 && !isTypingComplete && (
-                  <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ color: '#0284c7', fontWeight: 900 }}>|</motion.span>
-                )}
+                Dear Beloved Family & Friends,
               </div>
 
-              {/* Formal Invitation Announcement (Typewriter) */}
+              {/* Formal Invitation Announcement */}
               <div
                 style={{
                   fontFamily: 'var(--font-fun)',
-                  fontSize: '0.88rem',
+                  fontSize: '0.9rem',
                   color: '#64748b',
                   fontWeight: 600,
                   marginBottom: '4px',
-                  minHeight: '20px',
                 }}
               >
-                <span>{typedLines.announcement}</span>
-                {activeLineIdx === 2 && !isTypingComplete && (
-                  <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ color: '#dc2626', fontWeight: 900 }}>|</motion.span>
-                )}
+                You are warmly invited to celebrate
               </div>
 
-              {/* Parents Names Heading (Typewriter) */}
+              {/* Parents Names Heading */}
               <h2
                 style={{
                   fontFamily: 'var(--font-toy)',
-                  fontSize: 'clamp(1.6rem, 4.6vw, 2.3rem)',
+                  fontSize: 'clamp(1.7rem, 4.8vw, 2.4rem)',
                   color: '#0f172a',
                   lineHeight: 1.15,
-                  margin: '4px 0 6px 0',
-                  minHeight: '36px',
+                  margin: '6px 0 12px 0',
                 }}
               >
-                <span>{typedLines.parentsTitle}</span>
-                {activeLineIdx === 3 && !isTypingComplete && (
-                  <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ color: '#ffd000', fontWeight: 900 }}>|</motion.span>
-                )}
+                {eventDetails.parents.combined}'s Baby Shower
               </h2>
 
-              {/* Welcoming Baby Boy Josiah! (Typewriter) */}
-              <div
-                style={{
-                  fontFamily: 'var(--font-toy)',
-                  fontSize: 'clamp(1.15rem, 3.2vw, 1.45rem)',
-                  color: '#dc2626',
-                  letterSpacing: '0.5px',
-                  marginBottom: '10px',
-                  minHeight: '26px',
-                }}
-              >
-                <span>{typedLines.babyName}</span>
-                {activeLineIdx === 4 && !isTypingComplete && (
-                  <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ color: '#dc2626', fontWeight: 900 }}>|</motion.span>
-                )}
-              </div>
-
-              {/* Body Message (Typewriter) */}
+              {/* Body Message */}
               <p
                 style={{
                   fontFamily: 'var(--font-fun)',
-                  fontSize: 'clamp(0.88rem, 2.3vw, 0.98rem)',
+                  fontSize: 'clamp(0.9rem, 2.3vw, 1rem)',
                   color: '#334155',
                   lineHeight: 1.55,
                   maxWidth: '440px',
                   margin: '0 auto 16px auto',
                   fontWeight: 600,
-                  minHeight: '44px',
                 }}
               >
-                <span>{typedLines.bodyMessage}</span>
-                {activeLineIdx === 5 && !isTypingComplete && (
-                  <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ color: '#2563eb', fontWeight: 900 }}>|</motion.span>
-                )}
+                Please join us for a joyful gathering filled with love, laughter, and games as we prepare to welcome our little adventurer.
               </p>
 
               {/* Formal Event Details Parchment Inset */}
@@ -520,7 +421,7 @@ export default function OpeningAnimation({ onComplete }) {
                   boxShadow: '0 4px 10px rgba(0,0,0,0.04)',
                 }}
               >
-                {/* Date & Time (Typewriter) */}
+                {/* Date & Time */}
                 <div
                   style={{
                     display: 'flex',
@@ -531,17 +432,13 @@ export default function OpeningAnimation({ onComplete }) {
                     fontWeight: 800,
                     fontSize: 'clamp(0.85rem, 2.4vw, 0.95rem)',
                     color: '#0f172a',
-                    minHeight: '22px',
                   }}
                 >
-                  {typedLines.date && <Calendar size={15} color="#dc2626" />}
-                  <span>{typedLines.date}</span>
-                  {activeLineIdx === 6 && !isTypingComplete && (
-                    <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ color: '#dc2626', fontWeight: 900 }}>|</motion.span>
-                  )}
+                  <Calendar size={15} color="#dc2626" />
+                  <span>Sunday, December 6, 2026 • 2:30 PM</span>
                 </div>
 
-                {/* Venue Location (Typewriter) */}
+                {/* Venue Location */}
                 <div
                   style={{
                     display: 'flex',
@@ -553,58 +450,46 @@ export default function OpeningAnimation({ onComplete }) {
                     fontSize: 'clamp(0.8rem, 2.2vw, 0.88rem)',
                     color: '#0284c7',
                     marginTop: '4px',
-                    minHeight: '20px',
                   }}
                 >
-                  {typedLines.venue && <MapPin size={14} color="#0284c7" />}
-                  <span>{typedLines.venue}</span>
-                  {activeLineIdx === 7 && !isTypingComplete && (
-                    <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ color: '#0284c7', fontWeight: 900 }}>|</motion.span>
-                  )}
+                  <MapPin size={14} color="#0284c7" />
+                  <span>The Manoah Village Recall • Richmond, B.C.</span>
                 </div>
               </div>
 
-              {/* Motto Tagline (Typewriter) */}
+              {/* Motto Tagline */}
               <div
                 style={{
                   fontFamily: 'var(--font-fun)',
                   fontWeight: 800,
-                  fontSize: '0.82rem',
+                  fontSize: '0.84rem',
                   color: '#92400e',
-                  background: typedLines.motto ? '#fef3c7' : 'transparent',
-                  padding: typedLines.motto ? '4px 12px' : '0',
+                  background: '#fef3c7',
+                  padding: '4px 14px',
                   borderRadius: '20px',
                   display: 'inline-block',
-                  border: typedLines.motto ? '1px solid #fde68a' : 'none',
-                  marginBottom: '10px',
-                  minHeight: '22px',
+                  border: '1px solid #fde68a',
+                  marginBottom: '12px',
                 }}
               >
-                <span>{typedLines.motto}</span>
-                {activeLineIdx === 8 && !isTypingComplete && (
-                  <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ color: '#92400e', fontWeight: 900 }}>|</motion.span>
-                )}
+                “Our Greatest Adventure Is About to Begin!”
               </div>
 
-              {/* Formal Sign-off (Typewriter) */}
+              {/* Formal Sign-off */}
               <div
                 style={{
                   fontFamily: 'var(--font-fun)',
-                  fontSize: '0.86rem',
+                  fontSize: '0.9rem',
                   fontWeight: 700,
                   color: '#475569',
                   fontStyle: 'italic',
-                  minHeight: '20px',
                 }}
               >
-                <span>{typedLines.signature}</span>
-                {activeLineIdx === 9 && !isTypingComplete && (
-                  <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ color: '#dc2626', fontWeight: 900 }}>|</motion.span>
-                )}
+                — With all our love, {eventDetails.parents.combined} Hewko
               </div>
             </div>
 
-            {/* Action Enter Button with 5-Second Countdown Indicator */}
+            {/* Action Enter Button */}
             <motion.button
               onClick={onComplete}
               whileHover={{ scale: 1.04 }}
@@ -619,17 +504,8 @@ export default function OpeningAnimation({ onComplete }) {
                 gap: '8px',
               }}
             >
-              {isTypingComplete ? (
-                <>
-                  <span>ENTER CELEBRATION ({countdown}s)</span>
-                  <ArrowRight size={18} />
-                </>
-              ) : (
-                <>
-                  <span>READING YOUR INVITATION...</span>
-                  <Sparkles size={18} />
-                </>
-              )}
+              <span>ENTER CELEBRATION ({countdown}s)</span>
+              <ArrowRight size={18} />
             </motion.button>
           </motion.div>
         )}

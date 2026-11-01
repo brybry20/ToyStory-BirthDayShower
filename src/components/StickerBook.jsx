@@ -94,7 +94,7 @@ export default function StickerBook() {
               textShadow: '0 2px 6px rgba(0,0,0,0.3)',
             }}
           >
-            Direct from giphy.com/explore/toy-story-stickers! Tap any sticker to hear them speak, bounce, and celebrate with baby Josiah!
+            Direct from giphy.com/explore/toy-story-stickers! Tap any sticker to hear them speak, bounce, and celebrate with Jannah & Josiah!
           </p>
 
           {/* Collection Progress Pill */}

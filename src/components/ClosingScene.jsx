@@ -141,7 +141,7 @@ export default function ClosingScene() {
                 margin: 0,
               }}
             >
-              We can't wait to celebrate little baby Josiah with you! To infinity and beyond!
+              We can't wait to celebrate little baby boy with you! To infinity and beyond!
             </p>
 
             <div

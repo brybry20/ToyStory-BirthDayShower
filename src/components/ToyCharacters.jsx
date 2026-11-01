@@ -384,7 +384,7 @@ export function DukeCaboomCharacter({ height = 145, size = 145, onClick, interac
   return (
     <InteractiveToy
       name="Duke Caboom"
-      quote="Yes we Canada! Doing stunts for baby Josiah!"
+      quote="Yes we Canada! Doing stunts for our little adventurer!"
       quoteColor="#e11d48"
       src={GIPHY_STICKERS.dukeCaboom}
       alt="Duke Caboom"
@@ -422,7 +422,7 @@ export function CelebrationCharacter({ height = 210, size = 210, onClick, intera
   return (
     <InteractiveToy
       name="Woody & Buzz Celebration"
-      quote="To Josiah and beyond! Best adventure ever!"
+      quote="To infinity and beyond! Best adventure ever!"
       quoteColor="#1d4ed8"
       src={GIPHY_STICKERS.woodyBuzz}
       height={finalHeight}
@@ -552,7 +552,7 @@ export function ToyStoryBanner({ title = 'TOY STORY', subtitle, size = 'normal',
 export const ALL_22_GIPHY_STICKERS = [
   { id: 'woody_wave', name: 'Sheriff Woody', role: 'Official GIPHY Sticker', quote: "Reach for the stars, little partner!", quoteColor: '#b45309', image: GIPHY_STICKERS.woody, sound: () => soundEffects.playWoodyCheer() },
   { id: 'buzz_fly', name: 'Buzz Lightyear', role: 'Official GIPHY Sticker', quote: "To infinity and beyond!", quoteColor: '#15803d', image: GIPHY_STICKERS.buzz, sound: () => soundEffects.playLaser() },
-  { id: 'jessie_yodel', name: 'Jessie Cowgirl', role: 'Official GIPHY Sticker', quote: "Yodel-ay-hee-hoo! Welcome baby Josiah!", quoteColor: '#dc2626', image: GIPHY_STICKERS.jessie, sound: () => soundEffects.playYodel() },
+  { id: 'jessie_yodel', name: 'Jessie Cowgirl', role: 'Official GIPHY Sticker', quote: "Yodel-ay-hee-hoo! Welcome little baby!", quoteColor: '#dc2626', image: GIPHY_STICKERS.jessie, sound: () => soundEffects.playYodel() },
   { id: 'bullseye_run', name: 'Bullseye Steed', role: 'Official GIPHY Sticker', quote: "Ride like the wind, Bullseye!", quoteColor: '#854d0e', image: GIPHY_STICKERS.bullseye, sound: () => soundEffects.playGallop() },
   { id: 'rex_dino', name: 'Rex Dinosaur', role: 'Official GIPHY Sticker', quote: "Roar! I am so excited for the baby!", quoteColor: '#16a34a', image: GIPHY_STICKERS.rex, sound: () => soundEffects.playRexRoar() },
   { id: 'aliens_three', name: 'Three Green Aliens', role: 'Official GIPHY Sticker', quote: "The Claw has chosen a wonderful baby boy!", quoteColor: '#059669', image: GIPHY_STICKERS.alien, sound: () => soundEffects.playAlien() },
@@ -560,7 +560,7 @@ export const ALL_22_GIPHY_STICKERS = [
   { id: 'potato_head', name: 'Mr. Potato Head', role: 'Official GIPHY Sticker', quote: "Look, I got my party eyes on!", quoteColor: '#9a3412', image: GIPHY_STICKERS.potatoHead, sound: () => soundEffects.playPop() },
   { id: 'hamm_pig', name: 'Hamm Piggy Bank', role: 'Official GIPHY Sticker', quote: "Cha-ching! Best baby shower ever!", quoteColor: '#db2777', image: GIPHY_STICKERS.hamm, sound: () => soundEffects.playCoin() },
   { id: 'forky_dance', name: 'Forky Spork Dance', role: 'Official GIPHY Sticker', quote: "I am not trash, I am a party guest!", quoteColor: '#ea580c', image: GIPHY_STICKERS.forky, sound: () => soundEffects.playBoing() },
-  { id: 'woody_buzz_party', name: 'Woody & Buzz Party', role: 'Official GIPHY Sticker', quote: "Best toy buddies celebrating Josiah!", quoteColor: '#2563eb', image: GIPHY_STICKERS.woodyBuzz, sound: () => soundEffects.playFanfare() },
+  { id: 'woody_buzz_party', name: 'Woody & Buzz Party', role: 'Official GIPHY Sticker', quote: "Best toy buddies celebrating Jannah & Josiah!", quoteColor: '#2563eb', image: GIPHY_STICKERS.woodyBuzz, sound: () => soundEffects.playFanfare() },
   { id: 'woody_buzz_friends', name: 'Woody & Buzz Friends', role: 'Official GIPHY Sticker', quote: "You got a friend in me, partner!", quoteColor: '#1d4ed8', image: GIPHY_STICKERS.woodyBuzzFriends, sound: () => soundEffects.playSparkle() },
   { id: 'duke_caboom', name: 'Duke Caboom', role: 'Official GIPHY Sticker', quote: "Yes we Canada! Doing stunts for the baby!", quoteColor: '#e11d48', image: GIPHY_STICKERS.dukeCaboom, sound: () => soundEffects.playLaser() },
   { id: 'disney_baby', name: 'Disney Baby Toy Story', role: 'Official GIPHY Sticker', quote: "Welcome to the world, precious baby boy!", quoteColor: '#0284c7', image: GIPHY_STICKERS.disneyBaby, sound: () => soundEffects.playSparkle() },
@@ -570,7 +570,7 @@ export const ALL_22_GIPHY_STICKERS = [
   { id: 'woody_laugh', name: 'Woody Laughing', role: 'Official GIPHY Sticker', quote: "Haha! Best baby party ever!", quoteColor: '#b45309', image: GIPHY_STICKERS.woodyLaugh, sound: () => soundEffects.playWoodyCheer() },
   { id: 'alien_single', name: 'Green Alien Solo', role: 'Official GIPHY Sticker', quote: "The Claw is our master!", quoteColor: '#15803d', image: GIPHY_STICKERS.alienSingle, sound: () => soundEffects.playAlien() },
   { id: 'celebration_party', name: 'Confetti Celebration', role: 'Official GIPHY Sticker', quote: "Hooray! Confetti and joy for everyone!", quoteColor: '#f59e0b', image: GIPHY_STICKERS.celebration, sound: () => soundEffects.playCelebration() },
-  { id: 'happy_toy_story', name: 'Happy Toy Celebration', role: 'Official GIPHY Sticker', quote: "We are so happy for baby Josiah!", quoteColor: '#0284c7', image: GIPHY_STICKERS.happyToyStory, sound: () => soundEffects.playSparkle() },
+  { id: 'happy_toy_story', name: 'Happy Toy Celebration', role: 'Official GIPHY Sticker', quote: "We are so happy for your growing family!", quoteColor: '#0284c7', image: GIPHY_STICKERS.happyToyStory, sound: () => soundEffects.playSparkle() },
   { id: 'pixar_tech_toys', name: 'Pixar Tech Toys', role: 'Official GIPHY Sticker', quote: "Ready for high-tech baby shower fun!", quoteColor: '#7c3aed', image: GIPHY_STICKERS.pixarTechToys, sound: () => soundEffects.playLaser() },
 ];
 

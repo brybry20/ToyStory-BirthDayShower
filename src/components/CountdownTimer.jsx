@@ -172,9 +172,9 @@ export default function CountdownTimer() {
                 flexWrap: 'wrap',
               }}
             >
-              {/* Rex Dinosaur Sticker (Left) */}
+              {/* Rex Dinosaur Sticker (Left - hidden on mobile so blocks have full width) */}
               <motion.div
-                className="toy-cutout-sticker"
+                className="toy-cutout-sticker countdown-flank-character"
                 animate={{ y: [-4, 4, -4], rotate: [-2, 2, -2] }}
                 transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
                 onClick={() => soundEffects.playRexRoar()}
@@ -276,9 +276,9 @@ export default function CountdownTimer() {
                 ))}
               </div>
 
-              {/* Green Alien Sticker (Right) */}
+              {/* Green Alien Sticker (Right - hidden on mobile so blocks have full width) */}
               <motion.div
-                className="toy-cutout-sticker"
+                className="toy-cutout-sticker countdown-flank-character"
                 animate={{ y: [4, -4, 4], rotate: [2, -2, 2] }}
                 transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
                 onClick={() => soundEffects.playAlien()}

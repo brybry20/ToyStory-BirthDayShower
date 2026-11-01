@@ -210,6 +210,7 @@ export default function HeroSection({ heroActive = true }) {
 
         {/* 2. Main Headline with Scattered Flying Letters Assembling on Open */}
         <h1
+          className="hero-headline-title"
           onClick={() => {
             soundEffects.playToySpring();
             setIsAssembled(false);
@@ -218,10 +219,10 @@ export default function HeroSection({ heroActive = true }) {
           title="Click to scatter and re-assemble!"
           style={{
             fontFamily: 'var(--font-toy)',
-            fontSize: 'clamp(2.3rem, 6.2vw, 4rem)',
+            fontSize: 'clamp(1.5rem, 5.2vw, 3.8rem)',
             color: '#ffffff',
             textShadow: '0 5px 0 #1b639e, 0 10px 25px rgba(12, 45, 80, 0.35)',
-            lineHeight: 1.15,
+            lineHeight: 1.18,
             marginBottom: '20px',
             display: 'flex',
             flexWrap: 'wrap',
@@ -229,7 +230,7 @@ export default function HeroSection({ heroActive = true }) {
             alignItems: 'center',
             perspective: '800px',
             cursor: 'pointer',
-            minHeight: '120px',
+            minHeight: '80px',
             position: 'relative',
           }}
         >
@@ -302,6 +303,7 @@ export default function HeroSection({ heroActive = true }) {
             stiffness: 140,
             delay: 0.55,
           }}
+          className="hero-parents-pill"
           style={{
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(10px)',

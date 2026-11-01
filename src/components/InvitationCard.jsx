@@ -87,7 +87,7 @@ export default function InvitationCard() {
           />
 
           {/* Card Inner Content */}
-          <div style={{ padding: 'clamp(24px, 5vw, 48px)', position: 'relative' }}>
+          <div className="toy-card-inner" style={{ padding: 'clamp(20px, 4.5vw, 48px)', position: 'relative' }}>
             {/* Header Badge */}
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
               <span
@@ -106,6 +106,7 @@ export default function InvitationCard() {
 
             {/* Toy Story Logo Banner Flanked Symmetrically by Jessie & Bullseye */}
             <div
+              className="invitation-banner-row"
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -116,8 +117,9 @@ export default function InvitationCard() {
                 width: '100%',
               }}
             >
-              {/* Jessie Cutout (Left flank - balanced equal width) */}
+              {/* Jessie Cutout (Left flank - hidden on mobile for extra space) */}
               <div
+                className="invitation-flank-character"
                 style={{
                   flex: '0 0 auto',
                   width: 'clamp(70px, 13vw, 115px)',
@@ -129,12 +131,13 @@ export default function InvitationCard() {
               </div>
 
               {/* Center Logo Banner */}
-              <div style={{ flex: '1 1 auto', maxWidth: '440px', textAlign: 'center' }}>
+              <div style={{ flex: '1 1 auto', maxWidth: '440px', textAlign: 'center', width: '100%' }}>
                 <ToyStoryBanner title="TOY STORY" subtitle="BABY SHOWER CELEBRATION" />
               </div>
 
-              {/* Bullseye Cutout (Right flank - matching balanced equal width) */}
+              {/* Bullseye Cutout (Right flank - hidden on mobile for extra space) */}
               <div
+                className="invitation-flank-character"
                 style={{
                   flex: '0 0 auto',
                   width: 'clamp(70px, 13vw, 115px)',

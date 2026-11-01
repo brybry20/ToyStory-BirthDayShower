@@ -382,22 +382,9 @@ textarea {
 
 /* Tablets & Mobile Devices (under 768px) */
 @media (max-width: 768px) {
+  /* Hide rope climber on mobile screens so it does not crowd or overlap content */
   .rope-climber-aside {
-    right: 8px !important;
-    width: 48px !important;
-  }
-  .rope-woody-img,
-  .rope-woody-svg {
-    width: 58px !important;
-  }
-  .rope-climber-badge {
-    right: auto !important;
-    left: 50% !important;
-    top: -26px !important;
-    transform: translateX(-50%) !important;
-    padding: 2px 8px !important;
-    font-size: 0.68rem !important;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+    display: none !important;
   }
 }
 
@@ -412,16 +399,67 @@ textarea {
 /* Cellphones & Small Screens (under 640px) */
 @media (max-width: 640px) {
   .container {
-    padding: 0 14px !important;
+    padding: 0 10px !important;
   }
 
   section {
-    padding-left: 10px !important;
-    padding-right: 10px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    padding-top: 40px !important;
+    padding-bottom: 45px !important;
   }
 
+  /* Spacious, light toy card borders and padding on phones */
   .toy-card {
+    border-width: 4px !important;
     border-radius: 24px !important;
+  }
+
+  .toy-card-inner {
+    padding: 20px 14px !important;
+  }
+
+  /* Hide flank side cutouts in Invitation and Countdown so the center content has 100% space */
+  .invitation-flank-character,
+  .countdown-flank-character {
+    display: none !important;
+  }
+
+  .invitation-banner-row {
+    margin-bottom: 16px !important;
+  }
+
+  /* Hero Section Mobile Adjustments */
+  .hero-headline-title {
+    min-height: auto !important;
+    margin-bottom: 16px !important;
+  }
+
+  .hero-parents-pill {
+    padding: 8px 18px !important;
+    gap: 8px !important;
+    margin-bottom: 18px !important;
+  }
+
+  .mobile-toy-row {
+    margin-top: 22px !important;
+    gap: 10px !important;
+  }
+
+  .mobile-toy-row img {
+    max-height: 80px !important;
+  }
+
+  /* Show 4 primary characters in mobile row to keep it sleek and uncramped */
+  .mobile-toy-row > div:nth-child(n+5) {
+    display: none !important;
+  }
+
+  /* Countdown cubes on mobile */
+  .toy-block-cube {
+    width: clamp(64px, 20vw, 84px) !important;
+    height: clamp(68px, 21vw, 88px) !important;
+    border-radius: 14px !important;
   }
 
   /* Compact Music Player Pill on mobile */
