@@ -40,13 +40,13 @@ export const eventDetails = {
     eventTitle: "Baby Shower Celebration",
     theme: "It's A Boy Story Baby Shower",
     dateFormatted: "Sunday, December 6, 2026",
-    timeFormatted: "2:30 PM",
-    targetCountdownDate: "2026-12-06T14:30:00",
+    timeFormatted: "2:00 PM",
+    targetCountdownDate: "2026-12-06T14:00:00",
     rsvpDeadline: "November 28, 2026",
   },
 
   venue: {
-    name: "The Manoah Village Recall",
+    name: "The Manoah Village Rec Hall",
     address: "10200 Fourth Avenue, Richmond B.C.",
     city: "Richmond, B.C.",
     room: "Village Community Hall",

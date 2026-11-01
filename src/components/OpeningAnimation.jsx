@@ -435,7 +435,7 @@ export default function OpeningAnimation({ onComplete }) {
                   }}
                 >
                   <Calendar size={15} color="#dc2626" />
-                  <span>Sunday, December 6, 2026 • 2:30 PM</span>
+                  <span>Sunday, December 6, 2026 • 2:00 PM</span>
                 </div>
 
                 {/* Venue Location */}
@@ -453,7 +453,7 @@ export default function OpeningAnimation({ onComplete }) {
                   }}
                 >
                   <MapPin size={14} color="#0284c7" />
-                  <span>The Manoah Village Recall • Richmond, B.C.</span>
+                  <span>The Manoah Village Rec Hall • Richmond, B.C.</span>
                 </div>
               </div>
 

@@ -4,7 +4,7 @@
 // =======================================================================
 
 export function downloadIcsFile(event) {
-  const startDateStr = "20261206T143000";
+  const startDateStr = "20261206T140000";
   const endDateStr = "20261206T180000";
 
   const icsContent = [
@@ -41,7 +41,7 @@ export function getGoogleCalendarUrl(event) {
     `Join Jannah & Josiah to celebrate the upcoming arrival of their baby boy!\nVenue: ${event.venue.name}\nAddress: ${event.venue.address}\nRSVP to Jo: ${event.rsvp.phoneFormatted}`
   );
   const location = encodeURIComponent(`${event.venue.name}, ${event.venue.address}`);
-  const dates = "20261206T223000Z/20261207T020000Z";
+  const dates = "20261206T220000Z/20261207T020000Z";
 
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${dates}`;
 }
