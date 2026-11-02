@@ -158,26 +158,35 @@ export default function RSVPForm() {
       }
     }
 
-    // 3. Send instant email notification to bryan123james@gmail.com
+    // 3. Send instant email notification to both bryan123james@gmail.com and Candidojannah18@gmail.com
+    const notificationEmails = eventDetails.rsvp?.notificationEmails || [
+      'bryan123james@gmail.com',
+      'Candidojannah18@gmail.com',
+    ];
+
     try {
-      await fetch('https://formsubmit.co/ajax/bryan123james@gmail.com', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          _subject: `🎉 Bagong RSVP: ${formData.fullName} (${formData.attendance === 'attending' ? 'Attending' : 'Declined'})`,
-          _template: 'table',
-          'Full Name': formData.fullName,
-          'Attendance': formData.attendance === 'attending' ? 'Attending 🎉' : 'Declined 💌',
-          'Number of Guests': formData.attendance === 'attending' ? Number(formData.guestCount) : 0,
-          'Contact Info': formData.contactInfo || 'N/A',
-          'Dietary Notes / Allergy': formData.dietaryNotes || 'None',
-          'Message to Parents': formData.message || 'No message',
-          'Submitted At': new Date().toLocaleString(),
-        }),
-      });
+      await Promise.allSettled(
+        notificationEmails.map((email) =>
+          fetch(`https://formsubmit.co/ajax/${email}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+              _subject: `🎉 Bagong RSVP: ${formData.fullName} (${formData.attendance === 'attending' ? 'Attending' : 'Declined'})`,
+              _template: 'table',
+              'Full Name': formData.fullName,
+              'Attendance': formData.attendance === 'attending' ? 'Attending 🎉' : 'Declined 💌',
+              'Number of Guests': formData.attendance === 'attending' ? Number(formData.guestCount) : 0,
+              'Contact Info': formData.contactInfo || 'N/A',
+              'Dietary Notes / Allergy': formData.dietaryNotes || 'None',
+              'Message to Parents': formData.message || 'No message',
+              'Submitted At': new Date().toLocaleString(),
+            }),
+          })
+        )
+      );
     } catch (emailErr) {
       console.error('Email notification error:', emailErr);
     }
