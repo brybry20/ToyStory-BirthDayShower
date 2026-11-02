@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import { eventDetails } from '../config/eventDetails';
 import { soundEffects } from '../utils/soundEffects';
 import { AlienCharacter, HammCharacter } from './ToyCharacters';
+import { supabase } from '../utils/supabaseClient';
 
 const RSVP_STORAGE_KEY = 'toystory_babyshower_rsvps';
 
@@ -24,8 +25,9 @@ export default function RSVPForm() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showRsvpSummary, setShowRsvpSummary] = useState(false);
 
-  // Load existing RSVPs from localStorage on mount
+  // Load RSVPs: First from local cache, then sync from Supabase Cloud Database with Realtime!
   useEffect(() => {
+    // 1. Initial quick load from localStorage
     try {
       const saved = localStorage.getItem(RSVP_STORAGE_KEY);
       if (saved) {
@@ -34,6 +36,61 @@ export default function RSVPForm() {
     } catch (e) {
       console.error('Failed to load local RSVPs', e);
     }
+
+    // 2. Fetch from Supabase Realtime Database if configured
+    const fetchCloudRsvps = async () => {
+      if (!supabase) return;
+      try {
+        const { data, error } = await supabase
+          .from('rsvps')
+          .select('*')
+          .order('id', { ascending: false });
+
+        if (!error && data) {
+          const mapped = data.map((item) => ({
+            id: item.id,
+            fullName: item.full_name,
+            attendance: item.attendance,
+            guestCount: item.guest_count,
+            contactInfo: item.contact_info || '',
+            dietaryNotes: item.dietary_notes || '',
+            message: item.message || '',
+            submittedAt: item.created_at ? new Date(item.created_at).toLocaleString() : '',
+          }));
+          setSubmittedList(mapped);
+          try {
+            localStorage.setItem(RSVP_STORAGE_KEY, JSON.stringify(mapped));
+          } catch (e) {}
+        }
+      } catch (err) {
+        console.error('Failed to sync RSVPs from Supabase:', err);
+      }
+    };
+
+    fetchCloudRsvps();
+
+    // 3. Realtime listener: Whenever anyone submits on phone, laptop updates live!
+    let channel;
+    if (supabase) {
+      try {
+        channel = supabase
+          .channel('realtime_rsvps_feed')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'rsvps' },
+            () => {
+              fetchCloudRsvps();
+            }
+          )
+          .subscribe();
+      } catch (e) {}
+    }
+
+    return () => {
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, []);
 
   const handleChange = (e) => {
@@ -64,7 +121,28 @@ export default function RSVPForm() {
       submittedAt: new Date().toLocaleString(),
     };
 
-    // 1. Post to Google Sheets if configured
+    // 1. Post to Supabase Cloud Database if configured
+    if (supabase) {
+      try {
+        const { error } = await supabase.from('rsvps').insert([
+          {
+            full_name: formData.fullName.trim(),
+            attendance: formData.attendance,
+            guest_count: formData.attendance === 'attending' ? Number(formData.guestCount) : 0,
+            contact_info: formData.contactInfo.trim(),
+            dietary_notes: formData.dietaryNotes.trim(),
+            message: formData.message.trim(),
+          },
+        ]);
+        if (error) {
+          console.error('Supabase insert error:', error);
+        }
+      } catch (err) {
+        console.error('Failed sending to Supabase:', err);
+      }
+    }
+
+    // 2. Post to Google Sheets if configured
     if (eventDetails.rsvp.googleSheetScriptUrl) {
       try {
         await fetch(eventDetails.rsvp.googleSheetScriptUrl, {
@@ -80,7 +158,7 @@ export default function RSVPForm() {
       }
     }
 
-    // 2. Also keep in localStorage for local device confirmation
+    // 3. Also keep in localStorage for local device confirmation
     const existing = submittedList.find(
       (r) => r.fullName.toLowerCase().trim() === formData.fullName.toLowerCase().trim()
     );
@@ -125,12 +203,20 @@ export default function RSVPForm() {
     setIsSuccess(false);
   };
 
-  const handleDeleteEntry = (id) => {
+  const handleDeleteEntry = async (id) => {
     const updated = submittedList.filter((item) => item.id !== id);
     setSubmittedList(updated);
     try {
       localStorage.setItem(RSVP_STORAGE_KEY, JSON.stringify(updated));
     } catch (e) {}
+
+    if (supabase) {
+      try {
+        await supabase.from('rsvps').delete().eq('id', id);
+      } catch (e) {
+        console.error('Failed to delete from Supabase:', e);
+      }
+    }
   };
 
   const handleExportRsvps = () => {

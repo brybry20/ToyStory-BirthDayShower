@@ -64,6 +64,12 @@ export const eventDetails = {
     googleSheetScriptUrl: "https://script.google.com/macros/s/AKfycbwy6fAkokZUKXH3RIPFj0na1X9C1zkPF-i17alvEc1ZYA7I8VzGrUqLFh_4vIRx-dREtQ/exec",
   },
 
+  // Realtime Cloud Database (Supabase) - Configured via Environment Variables / .env
+  supabase: {
+    url: "",
+    anonKey: "",
+  },
+
   dressCode: {
     title: "Warm, Cozy & Casual (Toy Story Colors)",
     description: "Dress warmly and comfortably for December! Cozy knits, warm sweaters, comfy cardigans, warm layers, or casual jeans that make you feel relaxed. Feel free to accent with cheerful Toy Story colors: sky blue, denim, sunny yellow, cowboy red, or cozy cream.",
