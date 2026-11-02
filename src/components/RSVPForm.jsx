@@ -165,7 +165,7 @@ export default function RSVPForm() {
 
         {/* Form Card */}
         <div
-          className="toy-card"
+          className="toy-card toy-card-inner"
           style={{
             background: '#ffffff',
             borderRadius: '32px',

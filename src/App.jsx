@@ -6,6 +6,7 @@ import HeroSection from './components/HeroSection';
 import InvitationCard from './components/InvitationCard';
 import CountdownTimer from './components/CountdownTimer';
 import PhotoGallery from './components/PhotoGallery';
+import RSVPForm from './components/RSVPForm';
 import LocationSection from './components/LocationSection';
 import ClosingScene from './components/ClosingScene';
 import MusicPlayer from './components/MusicPlayer';
@@ -24,7 +25,7 @@ export default function App() {
 
   return (
     <div className="toystory-app-root" style={{ minHeight: '100vh', position: 'relative' }}>
-      {/* 1. Fullscreen Opening Animation with 3D Envelope & Typewriter Invitation Letter */}
+      {/* 1. Fullscreen Opening Animation with 3D Envelope & Formal Invitation Letter */}
       <AnimatePresence>
         {showOpening && (
           <OpeningAnimation onComplete={handleCompleteOpening} />
@@ -51,14 +52,17 @@ export default function App() {
         {/* Section D: Baby Memory Snapshot Photo Gallery with Etch-A-Sketch Lightbox */}
         <PhotoGallery />
 
-        {/* Section E: Venue Location & Event Info */}
+        {/* Section E: Interactive RSVP Confirmation Form & Direct Contact */}
+        <RSVPForm />
+
+        {/* Section F: Venue Location & Event Info */}
         <LocationSection />
 
-        {/* Section F: Warm Closing Scene with Woody & Buzz Waving and "See You There" Note */}
+        {/* Section G: Warm Closing Scene with Woody & Buzz Waving and "See You There" Note */}
         <ClosingScene />
       </main>
 
-      {/* 5. Toy Story Music Player ("You've Got a Friend in Me") */}
+      {/* 6. Toy Story Music Player ("You've Got a Friend in Me") */}
       <MusicPlayer autoPlayTrigger={startMusic} />
     </div>
   );
