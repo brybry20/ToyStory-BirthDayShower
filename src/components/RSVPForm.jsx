@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, CheckCircle2, AlertCircle, Heart, User, Users, MessageSquare, Info, Download, Trash2, Phone, PhoneCall, Check, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -21,17 +22,50 @@ export default function RSVPForm() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showRsvpSummary, setShowRsvpSummary] = useState(false);
 
-  // Lock body scroll when RSVP summary modal is open so background cannot scroll
+  // Bulletproof mobile (iOS/Android) + desktop scroll lock when modal is open
   useEffect(() => {
-    if (showRsvpSummary) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
+    if (!showRsvpSummary) return;
+
+    const scrollY = window.scrollY;
+    const origBodyStyle = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+    };
+    const origHtmlOverflow = document.documentElement.style.overflow;
+
+    // Completely lock viewport on both html and body
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+
+    // Prevent wheel and touchmove events outside the modal scroll card
+    const preventScrollOutside = (e) => {
+      if (!e.target.closest('.rsvp-modal-scrollable')) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('wheel', preventScrollOutside, { passive: false });
+    document.addEventListener('touchmove', preventScrollOutside, { passive: false });
+
+    return () => {
+      document.documentElement.style.overflow = origHtmlOverflow;
+      document.body.style.overflow = origBodyStyle.overflow;
+      document.body.style.position = origBodyStyle.position;
+      document.body.style.top = origBodyStyle.top;
+      document.body.style.width = origBodyStyle.width;
+      window.scrollTo(0, scrollY);
+
+      document.removeEventListener('wheel', preventScrollOutside);
+      document.removeEventListener('touchmove', preventScrollOutside);
+    };
   }, [showRsvpSummary]);
 
   // Load RSVPs: First from local cache, then sync from Supabase Cloud Database with Realtime!
@@ -105,22 +139,48 @@ export default function RSVPForm() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => ({ ...prev, [name]: '' }));
+    }
     setErrorMessage('');
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!formData.fullName.trim()) {
-      setErrorMessage('Please enter your full name so parents know who to expect!');
+    const errors = {};
+    const trimmedName = formData.fullName.trim();
+
+    // Required field validation: Full Name
+    if (!trimmedName) {
+      errors.fullName = 'Please fill out your full name';
+    }
+
+    // Required field validation: Attendance
+    if (!formData.attendance) {
+      errors.attendance = 'Please select if you are attending';
+    }
+
+    // Required if attending: Guest Count
+    if (formData.attendance === 'attending' && (!formData.guestCount || Number(formData.guestCount) < 1)) {
+      errors.guestCount = 'Please select number of guests attending';
+    }
+
+    // Contact info is purely optional - no error if blank!
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setErrorMessage('Please fill out the required information marked with *');
+      soundEffects.playBlockTap();
       return;
     }
 
+    setFieldErrors({});
     setErrorMessage('');
 
     const newEntry = {
       id: Date.now(),
-      fullName: formData.fullName.trim(),
+      fullName: trimmedName,
       attendance: formData.attendance,
       guestCount: formData.attendance === 'attending' ? Number(formData.guestCount) : 0,
       contactInfo: formData.contactInfo.trim(),
@@ -129,7 +189,7 @@ export default function RSVPForm() {
 
     // 1. Immediately update local state & cache for instant 0-second feedback!
     const existing = submittedList.find(
-      (r) => r.fullName.toLowerCase().trim() === formData.fullName.toLowerCase().trim()
+      (r) => r.fullName.toLowerCase().trim() === trimmedName.toLowerCase()
     );
 
     let updatedList;
@@ -237,6 +297,8 @@ export default function RSVPForm() {
       guestCount: 1,
       contactInfo: '',
     });
+    setFieldErrors({});
+    setErrorMessage('');
     setIsSuccess(false);
   };
 
@@ -522,7 +584,7 @@ export default function RSVPForm() {
             </motion.div>
           ) : (
             /* Active Form View */
-            <form onSubmit={handleSubmit}>
+            <form noValidate onSubmit={handleSubmit}>
               {/* Full Name */}
               <div style={{ marginBottom: '22px' }}>
                 <label
@@ -532,7 +594,7 @@ export default function RSVPForm() {
                     fontFamily: 'var(--font-fun)',
                     fontWeight: 700,
                     fontSize: '0.95rem',
-                    color: 'var(--text-dark)',
+                    color: fieldErrors.fullName ? '#dc2626' : 'var(--text-dark)',
                     marginBottom: '8px',
                   }}
                 >
@@ -546,27 +608,43 @@ export default function RSVPForm() {
                     placeholder="e.g. Woody Pride & Family"
                     value={formData.fullName}
                     onChange={handleChange}
-                    required
                     style={{
                       width: '100%',
                       padding: '14px 18px 14px 44px',
                       borderRadius: '16px',
-                      border: '2px solid #e2e8f0',
+                      border: fieldErrors.fullName ? '2px solid #ef4444' : '2px solid #e2e8f0',
                       fontSize: '1rem',
                       fontFamily: 'var(--font-body)',
                       outline: 'none',
-                      transition: 'border-color 0.2s ease',
-                      backgroundColor: '#f8fafc',
+                      transition: 'all 0.2s ease',
+                      backgroundColor: fieldErrors.fullName ? '#fef2f2' : '#f8fafc',
                     }}
-                    onFocus={(e) => (e.target.style.borderColor = 'var(--toy-blue)')}
-                    onBlur={(e) => (e.target.style.borderColor = '#e2e8f0')}
+                    onFocus={(e) => (e.target.style.borderColor = fieldErrors.fullName ? '#ef4444' : 'var(--toy-blue)')}
+                    onBlur={(e) => (e.target.style.borderColor = fieldErrors.fullName ? '#ef4444' : '#e2e8f0')}
                   />
                   <User
                     size={20}
-                    color="#94a3b8"
+                    color={fieldErrors.fullName ? '#ef4444' : '#94a3b8'}
                     style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}
                   />
                 </div>
+                {fieldErrors.fullName && (
+                  <div
+                    style={{
+                      color: '#dc2626',
+                      fontSize: '0.84rem',
+                      marginTop: '6px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px',
+                      fontFamily: 'var(--font-fun)',
+                      fontWeight: 600,
+                    }}
+                  >
+                    <AlertCircle size={14} />
+                    <span>Please fill out your full name</span>
+                  </div>
+                )}
               </div>
 
               {/* Attendance Radio Buttons */}
@@ -816,160 +894,169 @@ export default function RSVPForm() {
           )}
         </div>
 
-        {/* Modal: Saved Local RSVPs Summary */}
-        <AnimatePresence>
-          {showRsvpSummary && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowRsvpSummary(false)}
-              style={{
-                position: 'fixed',
-                inset: 0,
-                zIndex: 99999,
-                background: 'rgba(15, 23, 42, 0.88)',
-                backdropFilter: 'blur(8px)',
-                WebkitBackdropFilter: 'blur(8px)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '20px',
-                overscrollBehavior: 'contain',
-              }}
-            >
-              <motion.div
-                initial={{ scale: 0.9, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.9, y: 20 }}
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  background: '#ffffff',
-                  borderRadius: '24px',
-                  maxWidth: '580px',
-                  width: '100%',
-                  maxHeight: '85vh',
-                  overflowY: 'auto',
-                  WebkitOverflowScrolling: 'touch',
-                  padding: '28px',
-                  boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
-                  position: 'relative',
-                  zIndex: 100000,
-                }}
-              >
-                <div
+        {/* Modal: Saved Local RSVPs Summary rendered into document.body */}
+        {typeof document !== 'undefined' &&
+          createPortal(
+            <AnimatePresence>
+              {showRsvpSummary && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setShowRsvpSummary(false)}
                   style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 999999,
+                    background: 'rgba(8, 14, 26, 0.96)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
                     display: 'flex',
-                    justifyContent: 'space-between',
                     alignItems: 'center',
-                    marginBottom: '18px',
+                    justifyContent: 'center',
+                    padding: '16px',
+                    overscrollBehavior: 'contain',
+                    touchAction: 'none',
                   }}
                 >
-                  <h3 style={{ fontFamily: 'var(--font-toy)', fontSize: '1.6rem', color: 'var(--text-dark)' }}>
-                    Saved RSVPs ({submittedList.length})
-                  </h3>
-                  <button
-                    onClick={() => setShowRsvpSummary(false)}
+                  <motion.div
+                    className="rsvp-modal-scrollable"
+                    initial={{ scale: 0.92, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.92, y: 20 }}
+                    onClick={(e) => e.stopPropagation()}
                     style={{
-                      border: 'none',
-                      background: '#f1f5f9',
-                      borderRadius: '50%',
-                      width: '32px',
-                      height: '32px',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#64748b',
+                      background: '#ffffff',
+                      borderRadius: '24px',
+                      maxWidth: '580px',
+                      width: '100%',
+                      maxHeight: '85vh',
+                      overflowY: 'auto',
+                      WebkitOverflowScrolling: 'touch',
+                      padding: '24px',
+                      boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+                      position: 'relative',
+                      zIndex: 1000000,
+                      touchAction: 'auto',
                     }}
                   >
-                    <X size={16} />
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-                  <button
-                    onClick={handleExportRsvps}
-                    className="btn-toy btn-toy-yellow"
-                    style={{
-                      padding: '10px 18px',
-                      fontSize: '0.88rem',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      cursor: 'pointer',
-                    }}
-                    title="Download spreadsheet file that opens directly in Microsoft Excel"
-                  >
-                    <Download size={16} />
-                    <span>EXPORT TO EXCEL (.CSV)</span>
-                  </button>
-                </div>
-
-                {submittedList.length === 0 ? (
-                  <p style={{ color: 'var(--text-muted)' }}>No RSVPs submitted yet.</p>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {submittedList.map((item) => (
-                      <div
-                        key={item.id}
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '18px',
+                      }}
+                    >
+                      <h3 style={{ fontFamily: 'var(--font-toy)', fontSize: '1.6rem', color: 'var(--text-dark)' }}>
+                        Saved RSVPs ({submittedList.length})
+                      </h3>
+                      <button
+                        onClick={() => setShowRsvpSummary(false)}
                         style={{
-                          background: '#f8fafc',
-                          borderRadius: '16px',
-                          padding: '14px 18px',
-                          border: '1px solid #e2e8f0',
+                          border: 'none',
+                          background: '#f1f5f9',
+                          borderRadius: '50%',
+                          width: '36px',
+                          height: '36px',
+                          cursor: 'pointer',
                           display: 'flex',
-                          justifyContent: 'space-between',
                           alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#475569',
+                          fontWeight: 700,
                         }}
+                        title="Close Modal"
                       >
-                        <div>
-                          <div style={{ fontWeight: 800, fontFamily: 'var(--font-fun)' }}>
-                            {item.fullName}{' '}
-                            <span
-                              style={{
-                                fontSize: '0.75rem',
-                                padding: '2px 8px',
-                                borderRadius: '10px',
-                                background: item.attendance === 'attending' ? '#dcfce7' : '#fee2e2',
-                                color: item.attendance === 'attending' ? '#166534' : '#991b1b',
-                                marginLeft: '6px',
-                              }}
-                            >
-                              {item.attendance === 'attending' ? `Attending (${item.guestCount})` : 'Declined'}
-                            </span>
-                          </div>
-                          {item.contactInfo && (
-                            <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '3px' }}>
-                              Contact: {item.contactInfo}
-                            </div>
-                          )}
-                          <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '4px' }}>
-                            Submitted: {item.submittedAt}
-                          </div>
-                        </div>
+                        <X size={18} />
+                      </button>
+                    </div>
 
-                        <button
-                          onClick={() => handleDeleteEntry(item.id)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            color: '#ef4444',
-                            cursor: 'pointer',
-                            padding: '6px',
-                          }}
-                          title="Delete entry"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                      <button
+                        onClick={handleExportRsvps}
+                        className="btn-toy btn-toy-yellow"
+                        style={{
+                          padding: '10px 18px',
+                          fontSize: '0.88rem',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          cursor: 'pointer',
+                        }}
+                        title="Download spreadsheet file that opens directly in Microsoft Excel"
+                      >
+                        <Download size={16} />
+                        <span>EXPORT TO EXCEL (.CSV)</span>
+                      </button>
+                    </div>
+
+                    {submittedList.length === 0 ? (
+                      <p style={{ color: 'var(--text-muted)' }}>No RSVPs submitted yet.</p>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {submittedList.map((item) => (
+                          <div
+                            key={item.id}
+                            style={{
+                              background: '#f8fafc',
+                              borderRadius: '16px',
+                              padding: '14px 18px',
+                              border: '1px solid #e2e8f0',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                            }}
+                          >
+                            <div>
+                              <div style={{ fontWeight: 800, fontFamily: 'var(--font-fun)' }}>
+                                {item.fullName}{' '}
+                                <span
+                                  style={{
+                                    fontSize: '0.75rem',
+                                    padding: '2px 8px',
+                                    borderRadius: '10px',
+                                    background: item.attendance === 'attending' ? '#dcfce7' : '#fee2e2',
+                                    color: item.attendance === 'attending' ? '#166534' : '#991b1b',
+                                    marginLeft: '6px',
+                                  }}
+                                >
+                                  {item.attendance === 'attending' ? `Attending (${item.guestCount})` : 'Declined'}
+                                </span>
+                              </div>
+                              {item.contactInfo && (
+                                <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '3px' }}>
+                                  Contact: {item.contactInfo}
+                                </div>
+                              )}
+                              <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '4px' }}>
+                                Submitted: {item.submittedAt}
+                              </div>
+                            </div>
+
+                            <button
+                              onClick={() => handleDeleteEntry(item.id)}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#ef4444',
+                                cursor: 'pointer',
+                                padding: '6px',
+                              }}
+                              title="Delete entry"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                )}
-              </motion.div>
-            </motion.div>
+                    )}
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>,
+            document.body
           )}
-        </AnimatePresence>
       </div>
     </section>
   );
