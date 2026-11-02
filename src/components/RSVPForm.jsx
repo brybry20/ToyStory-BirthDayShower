@@ -20,6 +20,7 @@ export default function RSVPForm() {
 
   const [submittedList, setSubmittedList] = useState([]);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showRsvpSummary, setShowRsvpSummary] = useState(false);
 
@@ -41,7 +42,7 @@ export default function RSVPForm() {
     setErrorMessage('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.fullName.trim()) {
@@ -49,10 +50,8 @@ export default function RSVPForm() {
       return;
     }
 
-    // Check duplicate name
-    const existing = submittedList.find(
-      (r) => r.fullName.toLowerCase().trim() === formData.fullName.toLowerCase().trim()
-    );
+    setIsSubmitting(true);
+    setErrorMessage('');
 
     const newEntry = {
       id: Date.now(),
@@ -64,6 +63,27 @@ export default function RSVPForm() {
       message: formData.message.trim(),
       submittedAt: new Date().toLocaleString(),
     };
+
+    // 1. Post to Google Sheets if configured
+    if (eventDetails.rsvp.googleSheetScriptUrl) {
+      try {
+        await fetch(eventDetails.rsvp.googleSheetScriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+          },
+          body: JSON.stringify(newEntry),
+        });
+      } catch (err) {
+        console.error('Failed sending to Google Sheets:', err);
+      }
+    }
+
+    // 2. Also keep in localStorage for local device confirmation
+    const existing = submittedList.find(
+      (r) => r.fullName.toLowerCase().trim() === formData.fullName.toLowerCase().trim()
+    );
 
     let updatedList;
     if (existing) {
@@ -79,6 +99,7 @@ export default function RSVPForm() {
       console.error(err);
     }
 
+    setIsSubmitting(false);
     soundEffects.playCelebration();
     try {
       confetti({
@@ -585,15 +606,18 @@ export default function RSVPForm() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
                 <button
                   type="submit"
+                  disabled={isSubmitting}
                   className="btn-toy btn-toy-yellow"
                   style={{
                     flex: '1 1 240px',
                     fontSize: '1.25rem',
                     padding: '16px',
+                    opacity: isSubmitting ? 0.75 : 1,
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
                   }}
                 >
                   <Send size={20} />
-                  <span>CONFIRM RSVP</span>
+                  <span>{isSubmitting ? 'SAVING TO GUEST LIST...' : 'CONFIRM RSVP'}</span>
                 </button>
 
                 {/* Hamm Piggy Bank Cutout Sticker */}

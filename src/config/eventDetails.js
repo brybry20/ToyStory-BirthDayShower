@@ -61,6 +61,7 @@ export const eventDetails = {
     callUrl: "tel:6048927725",
     smsUrl: "sms:6048927725",
     note: "Kindly RSVP to Jo by calling or texting 604-892-7725",
+    googleSheetScriptUrl: "https://script.google.com/macros/s/AKfycbwy6fAkokZUKXH3RIPFj0na1X9C1zkPF-i17alvEc1ZYA7I8VzGrUqLFh_4vIRx-dREtQ/exec",
   },
 
   dressCode: {
