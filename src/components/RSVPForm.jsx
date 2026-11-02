@@ -15,8 +15,6 @@ export default function RSVPForm() {
     attendance: 'attending', // 'attending' or 'declined'
     guestCount: 1,
     contactInfo: '',
-    dietaryNotes: '',
-    message: '',
   });
 
   const [submittedList, setSubmittedList] = useState([]);
@@ -24,6 +22,17 @@ export default function RSVPForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showRsvpSummary, setShowRsvpSummary] = useState(false);
+
+  // Lock body scroll when RSVP summary modal is open so background cannot scroll
+  useEffect(() => {
+    if (showRsvpSummary) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [showRsvpSummary]);
 
   // Load RSVPs: First from local cache, then sync from Supabase Cloud Database with Realtime!
   useEffect(() => {
@@ -99,7 +108,7 @@ export default function RSVPForm() {
     setErrorMessage('');
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!formData.fullName.trim()) {
@@ -107,7 +116,6 @@ export default function RSVPForm() {
       return;
     }
 
-    setIsSubmitting(true);
     setErrorMessage('');
 
     const newEntry = {
@@ -116,82 +124,10 @@ export default function RSVPForm() {
       attendance: formData.attendance,
       guestCount: formData.attendance === 'attending' ? Number(formData.guestCount) : 0,
       contactInfo: formData.contactInfo.trim(),
-      dietaryNotes: formData.dietaryNotes.trim(),
-      message: formData.message.trim(),
       submittedAt: new Date().toLocaleString(),
     };
 
-    // 1. Post to Supabase Cloud Database if configured
-    if (supabase) {
-      try {
-        const { error } = await supabase.from('rsvps').insert([
-          {
-            full_name: formData.fullName.trim(),
-            attendance: formData.attendance,
-            guest_count: formData.attendance === 'attending' ? Number(formData.guestCount) : 0,
-            contact_info: formData.contactInfo.trim(),
-            dietary_notes: formData.dietaryNotes.trim(),
-            message: formData.message.trim(),
-          },
-        ]);
-        if (error) {
-          console.error('Supabase insert error:', error);
-        }
-      } catch (err) {
-        console.error('Failed sending to Supabase:', err);
-      }
-    }
-
-    // 2. Post to Google Sheets if configured
-    if (eventDetails.rsvp.googleSheetScriptUrl) {
-      try {
-        await fetch(eventDetails.rsvp.googleSheetScriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8',
-          },
-          body: JSON.stringify(newEntry),
-        });
-      } catch (err) {
-        console.error('Failed sending to Google Sheets:', err);
-      }
-    }
-
-    // 3. Send instant email notification to both bryan123james@gmail.com and Candidojannah18@gmail.com
-    const notificationEmails = eventDetails.rsvp?.notificationEmails || [
-      'bryan123james@gmail.com',
-      'Candidojannah18@gmail.com',
-    ];
-
-    try {
-      await Promise.allSettled(
-        notificationEmails.map((email) =>
-          fetch(`https://formsubmit.co/ajax/${email}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-              _subject: `🎉 Bagong RSVP: ${formData.fullName} (${formData.attendance === 'attending' ? 'Attending' : 'Declined'})`,
-              _template: 'table',
-              'Full Name': formData.fullName,
-              'Attendance': formData.attendance === 'attending' ? 'Attending 🎉' : 'Declined 💌',
-              'Number of Guests': formData.attendance === 'attending' ? Number(formData.guestCount) : 0,
-              'Contact Info': formData.contactInfo || 'N/A',
-              'Dietary Notes / Allergy': formData.dietaryNotes || 'None',
-              'Message to Parents': formData.message || 'No message',
-              'Submitted At': new Date().toLocaleString(),
-            }),
-          })
-        )
-      );
-    } catch (emailErr) {
-      console.error('Email notification error:', emailErr);
-    }
-
-    // 4. Also keep in localStorage for local device confirmation
+    // 1. Immediately update local state & cache for instant 0-second feedback!
     const existing = submittedList.find(
       (r) => r.fullName.toLowerCase().trim() === formData.fullName.toLowerCase().trim()
     );
@@ -210,7 +146,7 @@ export default function RSVPForm() {
       console.error(err);
     }
 
-    setIsSubmitting(false);
+    // 2. Instant celebration feedback
     soundEffects.playCelebration();
     try {
       confetti({
@@ -222,6 +158,76 @@ export default function RSVPForm() {
     } catch (e) {}
 
     setIsSuccess(true);
+    setIsSubmitting(false);
+
+    // 3. Fire-and-forget background sync (Supabase & Emails) - non-blocking!
+    (async () => {
+      // Background: Post to Supabase
+      if (supabase) {
+        try {
+          const { error } = await supabase.from('rsvps').insert([
+            {
+              full_name: newEntry.fullName,
+              attendance: newEntry.attendance,
+              guest_count: newEntry.guestCount,
+              contact_info: newEntry.contactInfo,
+            },
+          ]);
+          if (error) {
+            console.error('Supabase background insert error:', error);
+          }
+        } catch (err) {
+          console.error('Failed sending to Supabase:', err);
+        }
+      }
+
+      // Background: Post to Google Sheets if configured
+      if (eventDetails.rsvp.googleSheetScriptUrl) {
+        try {
+          await fetch(eventDetails.rsvp.googleSheetScriptUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'text/plain;charset=utf-8',
+            },
+            body: JSON.stringify(newEntry),
+          });
+        } catch (err) {
+          console.error('Failed sending to Google Sheets:', err);
+        }
+      }
+
+      // Background: Send email notifications to both emails
+      const notificationEmails = eventDetails.rsvp?.notificationEmails || [
+        'bryan123james@gmail.com',
+        'Candidojannah18@gmail.com',
+      ];
+
+      try {
+        await Promise.allSettled(
+          notificationEmails.map((email) =>
+            fetch(`https://formsubmit.co/ajax/${email}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+              },
+              body: JSON.stringify({
+                _subject: `🎉 Bagong RSVP: ${newEntry.fullName} (${newEntry.attendance === 'attending' ? 'Attending' : 'Declined'})`,
+                _template: 'table',
+                'Full Name': newEntry.fullName,
+                'Attendance': newEntry.attendance === 'attending' ? 'Attending 🎉' : 'Declined 💌',
+                'Number of Guests': newEntry.guestCount,
+                'Contact Info': newEntry.contactInfo || 'N/A',
+                'Submitted At': newEntry.submittedAt,
+              }),
+            })
+          )
+        );
+      } catch (emailErr) {
+        console.error('Email notification error:', emailErr);
+      }
+    })();
   };
 
   const handleResetForm = () => {
@@ -230,8 +236,6 @@ export default function RSVPForm() {
       attendance: 'attending',
       guestCount: 1,
       contactInfo: '',
-      dietaryNotes: '',
-      message: '',
     });
     setIsSuccess(false);
   };
@@ -262,8 +266,6 @@ export default function RSVPForm() {
       'Attendance',
       'Number of Guests',
       'Contact Info',
-      'Dietary Notes',
-      'Message to Parents',
     ];
 
     const escapeCsv = (str) => {
@@ -278,8 +280,6 @@ export default function RSVPForm() {
         escapeCsv(item.attendance === 'attending' ? 'Attending' : 'Declined'),
         escapeCsv(item.guestCount || (item.attendance === 'attending' ? 1 : 0)),
         escapeCsv(item.contactInfo || ''),
-        escapeCsv(item.dietaryNotes || ''),
-        escapeCsv(item.message || ''),
       ].join(',')
     );
 
@@ -827,13 +827,15 @@ export default function RSVPForm() {
               style={{
                 position: 'fixed',
                 inset: 0,
-                zIndex: 12000,
-                background: 'rgba(15, 30, 50, 0.75)',
-                backdropFilter: 'blur(6px)',
+                zIndex: 99999,
+                background: 'rgba(15, 23, 42, 0.88)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '20px',
+                overscrollBehavior: 'contain',
               }}
             >
               <motion.div
@@ -848,8 +850,11 @@ export default function RSVPForm() {
                   width: '100%',
                   maxHeight: '85vh',
                   overflowY: 'auto',
+                  WebkitOverflowScrolling: 'touch',
                   padding: '28px',
-                  boxShadow: '0 25px 60px rgba(0,0,0,0.3)',
+                  boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
+                  position: 'relative',
+                  zIndex: 100000,
                 }}
               >
                 <div
@@ -934,9 +939,9 @@ export default function RSVPForm() {
                               {item.attendance === 'attending' ? `Attending (${item.guestCount})` : 'Declined'}
                             </span>
                           </div>
-                          {item.message && (
-                            <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px' }}>
-                              "{item.message}"
+                          {item.contactInfo && (
+                            <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '3px' }}>
+                              Contact: {item.contactInfo}
                             </div>
                           )}
                           <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '4px' }}>
