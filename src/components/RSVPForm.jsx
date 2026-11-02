@@ -158,7 +158,31 @@ export default function RSVPForm() {
       }
     }
 
-    // 3. Also keep in localStorage for local device confirmation
+    // 3. Send instant email notification to bryan123james@gmail.com
+    try {
+      await fetch('https://formsubmit.co/ajax/bryan123james@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: `🎉 Bagong RSVP: ${formData.fullName} (${formData.attendance === 'attending' ? 'Attending' : 'Declined'})`,
+          _template: 'table',
+          'Full Name': formData.fullName,
+          'Attendance': formData.attendance === 'attending' ? 'Attending 🎉' : 'Declined 💌',
+          'Number of Guests': formData.attendance === 'attending' ? Number(formData.guestCount) : 0,
+          'Contact Info': formData.contactInfo || 'N/A',
+          'Dietary Notes / Allergy': formData.dietaryNotes || 'None',
+          'Message to Parents': formData.message || 'No message',
+          'Submitted At': new Date().toLocaleString(),
+        }),
+      });
+    } catch (emailErr) {
+      console.error('Email notification error:', emailErr);
+    }
+
+    // 4. Also keep in localStorage for local device confirmation
     const existing = submittedList.find(
       (r) => r.fullName.toLowerCase().trim() === formData.fullName.toLowerCase().trim()
     );
@@ -220,11 +244,50 @@ export default function RSVPForm() {
   };
 
   const handleExportRsvps = () => {
-    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(submittedList, null, 2));
+    if (!submittedList || submittedList.length === 0) return;
+
+    // Excel-ready CSV headers
+    const headers = [
+      'Timestamp',
+      'Full Name',
+      'Attendance',
+      'Number of Guests',
+      'Contact Info',
+      'Dietary Notes',
+      'Message to Parents',
+    ];
+
+    const escapeCsv = (str) => {
+      const stringValue = str === undefined || str === null ? '' : String(str);
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    };
+
+    const rows = submittedList.map((item) =>
+      [
+        escapeCsv(item.submittedAt || ''),
+        escapeCsv(item.fullName || ''),
+        escapeCsv(item.attendance === 'attending' ? 'Attending' : 'Declined'),
+        escapeCsv(item.guestCount || (item.attendance === 'attending' ? 1 : 0)),
+        escapeCsv(item.contactInfo || ''),
+        escapeCsv(item.dietaryNotes || ''),
+        escapeCsv(item.message || ''),
+      ].join(',')
+    );
+
+    // \uFEFF UTF-8 BOM ensures Microsoft Excel renders cleanly with correct accents/characters
+    const csvContent = '\uFEFF' + [headers.map(escapeCsv).join(','), ...rows].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const dlAnchor = document.createElement('a');
-    dlAnchor.setAttribute('href', dataStr);
-    dlAnchor.setAttribute('download', 'baby-shower-rsvps.json');
+    dlAnchor.setAttribute('href', url);
+    dlAnchor.setAttribute(
+      'download',
+      `ToyStory_BabyShower_RSVPs_${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    document.body.appendChild(dlAnchor);
     dlAnchor.click();
+    document.body.removeChild(dlAnchor);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -813,10 +876,19 @@ export default function RSVPForm() {
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                   <button
                     onClick={handleExportRsvps}
-                    className="btn-toy btn-toy-white"
-                    style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                    className="btn-toy btn-toy-yellow"
+                    style={{
+                      padding: '10px 18px',
+                      fontSize: '0.88rem',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer',
+                    }}
+                    title="Download spreadsheet file that opens directly in Microsoft Excel"
                   >
-                    <Download size={16} /> Export JSON
+                    <Download size={16} />
+                    <span>EXPORT TO EXCEL (.CSV)</span>
                   </button>
                 </div>
 
